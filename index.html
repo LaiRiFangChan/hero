@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link href="lib/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- 写在 导入之后 -->
+    <style>
+      /* 如果页面中用了多个 .navbar 全部都改了
+      一般添加一个自己的类名避免覆盖问题
+     */
+      .my-navbar {
+        margin: 0;
+      }
+      /* 自定义的类名 */
+      .col-margin {
+        /* margin: 10px 0; */
+        /* 盒模型 box-sizing 怪异盒模型 */
+        padding: 10px;
+      }
+      .my-pagination a {
+        width: 41px;
+        text-align: center;
+      }
+    </style>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!-- css hack 条件注释 满足某些条件就会生效 -->
+    <!-- 
+      html5shiv:
+        低版本ie兼容h5新语义标签 header,footer,section...
+        原理用js创建了这个元素 设置display:block
+      respond:
+        媒体查询低版本浏览器兼容
+   -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <nav class="navbar navbar-default my-navbar">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1"
+            aria-expanded="false"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">克鲁赛德战记</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <form class="navbar-form navbar-left">
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control input-search"
+                placeholder="请输入查询的英雄"
+              />
+            </div>
+            <button type="submit" class="btn btn-default btn-search">
+              搜索
+            </button>
+          </form>
+        </div>
+        <!-- /.navbar-collapse -->
+      </div>
+      <!-- /.container-fluid -->
+    </nav>
+    <!-- 内容容器 -->
+    <div class="container">
+      <!-- 分页 -->
+      <nav aria-label="Page navigation">
+        <ul class="pagination my-pagination">
+          <li>
+            <a href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li class="page-num"><a href="#">1/1</a></li>
+          <li>
+            <a href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- 内容 -->
+      <div class="row">
+        <div class="col-xs-3 col-margin ">
+          <div class="media">
+            <div class="media-left">
+              <a href="#">
+                <img
+                  class="media-object"
+                  src="http://p0.qhimg.com/dr/72__/t016f2baa3729884891.png"
+                  alt="..."
+                />
+              </a>
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading">专职打劫犯</h4>
+              黑暗制裁
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!-- 解决js兼容 -->
+<script src="lib/js/jquery-1.12.4.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="lib/js/bootstrap.min.js"></script>
+<!-- 导入模板引擎 -->
+<script src="./lib/js/template-web.js"></script>
+<!-- 模板 -->
+<script id="hero" type="text/html">
+  {{each list}}
+    <div class="col-xs-3 col-margin ">
+      <div class="media">
+        <div class="media-left">
+          <a href="#">
+            <img class="media-object" src="{{$value.icon}}" alt="...">
+          </a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">{{$value.name}}</h4>
+          {{$value.skill}}
+        </div>
+      </div>
+    </div>
+  {{/each}}
+  
+</script>
+<script>
+  /*
+    - 请求地址：https://autumnfish.cn/api/cq/page
+    - 请求方法：get
+    - 请求参数：query,pageNum,pageSize
+
+    步骤
+
+    1. 为搜索框绑定 keyup
+    2. ajax获取数据
+    3. 数据回来之后 渲染到页面上
+
+
+    上一页 下一页
+    1. 声明变量保存页码
+    2. 上一页绑定点击事件
+      1. 页码--
+      2. 重新获取数据
+    3. 下一页绑定点击事件
+      1. 页码++
+      2. 重新获取数据
+
+  */
+  $(function() {
+    // 页码
+    var pageNum = 1
+    // 获取数据的逻辑
+    function getData() {
+      // 获取value值
+      var query = $('.input-search').val()
+      // ajax
+      $.ajax({
+        url: 'https://autumnfish.cn/api/cq/page',
+        type: 'get',
+        data: {
+          query: query,
+          pageNum: pageNum,
+          pageSize: 4
+        },
+        success: function(backData) {
+          // console.log(backData)
+          // 核心方法
+          var html = template('hero', backData)
+          $('.row').html(html)
+          // 修改页码
+          $('.page-num a').text(pageNum + '/' + backData.totalPage)
+        }
+      })
+    }
+
+    // 按下回车查询数据
+    $('.input-search').keyup(function(event) {
+      // 阻止默认行为
+      event.preventDefault()
+      if (event.keyCode == 13) {
+        // 调用抽取的 函数即可
+        getData()
+      }
+
+      return false
+    })
+
+    // 阻止提交按钮的默认行为
+    // $('.btn-search').click(function(event){
+    //   event.preventDefault()
+    // })
+    // 阻止form表单的默认行为 submit 提交的意思
+    // submit 会在表单提交的时候触发
+    $('form').submit(function(event) {
+      event.preventDefault()
+    })
+
+    // 上一页
+    $('.my-pagination li:first').click(function() {
+      // 页码--
+      pageNum--
+      if (pageNum < 1) {
+        alert('哥们，前面没有啦，别点啦')
+        pageNum = 1
+        return
+      }
+      // 重新获取数据
+      getData()
+    })
+    // 下一页
+    $('.my-pagination li:last').click(function() {
+      // 页码++
+      pageNum++
+      var totalPage = $('.page-num a')
+        .text()
+        .split('/')[1]
+      if (pageNum > totalPage) {
+        alert('哥们，后面没有啦，别点啦')
+        pageNum = totalPage
+        return
+      }
+      // 重新获取数据
+      getData()
+    })
+  })
+</script>
